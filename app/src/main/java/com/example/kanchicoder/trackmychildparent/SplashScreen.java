@@ -1,15 +1,22 @@
 package com.example.kanchicoder.trackmychildparent;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.os.*;
+import android.widget.Toast;
+
 import com.google.android.gms.common.api.GoogleApiClient;
 
 /**
@@ -20,11 +27,6 @@ public class SplashScreen extends AppCompatActivity {
     private ImageView logo;
     private TextView appname;
     private static int TIME_OUT = 800;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,8 +50,21 @@ public class SplashScreen extends AppCompatActivity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        startActivity(new Intent(getApplicationContext(), WelcomeActivity.class));
-                        finish();
+                        if(checkNetworkState(getApplicationContext())) {
+                            startActivity(new Intent(getApplicationContext(), WelcomeActivity.class));
+                            finish();
+                        }
+                        else {
+                            Snackbar mySnackbar  = Snackbar.make(findViewById(R.id.splashCoordinatorLayout),
+                                    "No Internet Connection", Snackbar.LENGTH_INDEFINITE).setAction("Close", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    finish();
+                                    System.exit(0);
+                                }
+                            });
+                            mySnackbar.show();
+                        }
                     }
                 }, TIME_OUT);
 
@@ -62,5 +77,13 @@ public class SplashScreen extends AppCompatActivity {
         });
 
     }
+    public boolean checkNetworkState(Context context) {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+        return isConnected;
+    }
 }
