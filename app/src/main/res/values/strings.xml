@@ -2,7 +2,7 @@
     <string name="app_name">trackmychildParent</string>
     <string name="designed_app_name">Track My Child</string>
     <string name="title_activity_welcome">Home Screen</string>
-    <string name="title_activity_login">Log In</string>
+    <string name="title_activity_login">LOG IN</string>
     <string name="uid_hint">User ID</string>
     <string name="login_button">Log In</string>
     <string name="passowor_hint">Enter Password</string>

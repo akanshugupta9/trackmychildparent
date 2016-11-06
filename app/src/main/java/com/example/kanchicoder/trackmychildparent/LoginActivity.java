@@ -1,7 +1,10 @@
 package com.example.kanchicoder.trackmychildparent;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -20,8 +23,11 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 
 /**
  * Created by kanchicoder on 11/6/2016.
@@ -38,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+        ButterKnife.inject(this);
         initListeners();
     }
 
@@ -49,17 +56,40 @@ public class LoginActivity extends AppCompatActivity {
         logIn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+
+                if(uid.getText().toString().length() != 12  || uid.getText().toString().matches("[0-9]+") == false) {
+                    Snackbar mySnackbar  = Snackbar.make(findViewById(R.id.loginCoordinatorLayout),
+                            "Please enter valid 12 Digit User ID", Snackbar.LENGTH_SHORT);
+                    mySnackbar.show();
+                    return;
+                }
+                if(password.getText().toString().length() < 1) {
+                    Snackbar mySnackbar  = Snackbar.make(findViewById(R.id.loginCoordinatorLayout),
+                            "Password cannot be blank", Snackbar.LENGTH_SHORT);
+                    mySnackbar.show();
+                    return;
+                }
+                logIn.setEnabled(false);
+                final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this, R.style.AppTheme_Dark_Dialog);
+                progressDialog.setIndeterminate(true);
+                progressDialog.setMessage("Authenticating...");
+                progressDialog.show();
                 request = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         try {
                             JSONObject jsonObject = new JSONObject(response);
                             if(jsonObject.names().get(0).equals("success")){
-                                Toast.makeText(getApplicationContext(),"SUCCESS "+jsonObject.getString("success"),Toast.LENGTH_SHORT).show();
-
+                               progressDialog.dismiss();
+                                logIn.setEnabled(true);
+                               finish();
+                               startActivity(new Intent(getApplicationContext(), MainActivity.class));
                             }else {
-                                Toast.makeText(getApplicationContext(), "Error" +jsonObject.getString("error"), Toast.LENGTH_SHORT).show();
-                            }
+                                progressDialog.dismiss();
+                                logIn.setEnabled(true);
+                                Snackbar mySnackbar  = Snackbar.make(findViewById(R.id.loginCoordinatorLayout),
+                                        "Error" + jsonObject.getString("error"), Snackbar.LENGTH_SHORT);
+                                mySnackbar.show();                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();

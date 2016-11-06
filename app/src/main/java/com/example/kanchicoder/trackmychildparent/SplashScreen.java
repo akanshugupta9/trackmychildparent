@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -17,7 +19,6 @@ import android.widget.TextView;
 import android.os.*;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 
 /**
  * Created by kanchicoder on 11/6/2016.
@@ -31,6 +32,9 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.splash);
         //setting the animation in splash
         logo = (ImageView) findViewById(R.id.splash_logo_imageview);
